@@ -1,9 +1,11 @@
 import { router } from "../trpc";
-import { exampleRouter } from "./example";
+// import { exampleRouter } from "./example";
+import { pokemonRouter } from "./getPokemon";
 
 export const appRouter = router({
-  example: exampleRouter,
+  example: pokemonRouter,
 });
+
 
 // export type definition of API
 export type AppRouter = typeof appRouter;

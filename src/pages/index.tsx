@@ -1,15 +1,21 @@
 import { type NextPage } from "next";
+import { useEffect, useState} from "react";
 import Head from "next/head";
-import Link from "next/link";
-
+import { getOptionsForVote } from "../utils/getRandomPlayer";
 import { trpc } from "../utils/trpc";
 
+
 const Home: NextPage = () => {
-  const hello = trpc.example.hello.useQuery({ text: "from tRPC" });
+    const [ids, upateIds] = useState(getOptionsForVote());
+    const [first, second] = ids;
 
-  if(hello.isLoading) return <div>Loading...</div>
+    const firstPokemon = trpc.example.getPokemonById.useQuery({ id: first ?? 0});
+    const secondPokemon = trpc.example.getPokemonById.useQuery({ id: second ?? 0});
+    console.log(firstPokemon.data);
+    console.log(secondPokemon.data);
 
-  if(hello.data) return <div>{hello.data.greeting}</div>
+    if(firstPokemon.isLoading || secondPokemon.isLoading)
+    return null
 
   return (
     <>
@@ -24,9 +30,17 @@ const Home: NextPage = () => {
             Which Player is Better?
           </h1>
           <div className="mt-8 border rounded p-8 flex justify-between items-center max-w-2xl">
-            <div className="w-16 h-16 bg-cyan-800"></div>
+            <div className="w-64 h-64 flex flex-col">
+              <img className="w-full" src={firstPokemon.data?.sprites.front_default} alt="Pokemon 1"/>
+              <div className="p-2"></div>
+              <div className="text-xl text-center capitalize mt-[-2rem]">{firstPokemon.data?.name}</div>
+            </div>
             <div className="p-8">Vs</div>
-            <div className="w-16 h-16 bg-cyan-800"></div>
+            <div className="w-64 h-64 flex flex-col">
+              <img className="w-full" src={secondPokemon.data?.sprites.front_default} alt="Pokemon 1"/>
+              <div className="p-2"></div>
+              <div className="text-xl text-center capitalize mt-[-2rem]">{secondPokemon.data?.name}</div>
+            </div>
           </div>
         </div>
       </main>
